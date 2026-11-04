@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PsoftArenaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PsoftArenaApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(PsoftArenaApplication.class, args);
+    }
 }
