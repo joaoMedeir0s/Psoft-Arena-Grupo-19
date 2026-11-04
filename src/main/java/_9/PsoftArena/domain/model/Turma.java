@@ -13,12 +13,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity 
 @Table(name = "tb_turma")
 @Getter 
+@Setter
 public class Turma {
    
     @Column(nullable = false)
@@ -45,11 +48,16 @@ public class Turma {
      @Column(nullable = false, unique = true)
     private String codigo;
 
-    public Turma(String codigo, String nome, String periodoLetivo) {
+    @ManyToOne
+    @JoinColumn(name = "professor_matricula", nullable = false)
+    private Professor professor;
+
+    public Turma(String codigo, String nome, String periodoLetivo, Professor professor) {
         this.codigo = codigo;
         this.nome = nome;
         this.periodoLetivo = periodoLetivo;
         this.statusTurma = StatusTurma.ATIVA; 
+        this.professor = professor;
     }
 
     public void encerrar() {

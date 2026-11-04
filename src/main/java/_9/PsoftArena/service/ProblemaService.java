@@ -42,4 +42,5 @@ public class ProblemaService {
     public List<Problema> listarTodos() {
         return repository.findAll(); // Usa findAll do JPA
     }
+
 }
