@@ -78,4 +78,18 @@ public class Turma {
         }
         estudantes.add(estudante);
     }
+
+    public boolean podeRemoverEstudante(Estudante estudante) {
+        return statusTurma == StatusTurma.ATIVA && estudantes.contains(estudante);
+    }
+
+    public void removerEstudante(Estudante estudante) {
+        if (statusTurma == StatusTurma.ENCERRADA) {
+            throw new IllegalStateException("Turma encerrada nao pode ter estudantes removidos");
+        }
+        if (!estudantes.contains(estudante)) {
+            throw new IllegalStateException("Estudante nao esta associado a esta turma");
+        }
+        estudantes.remove(estudante);
+    }
 }

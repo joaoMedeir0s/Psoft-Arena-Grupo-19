@@ -93,4 +93,21 @@ public class TurmaService {
         return TurmaResponseDTO.de(turmaRepository.save(turma));
     }
 
+    public TurmaResponseDTO removerEstudante(Long turmaId, String matricula) {
+        Turma turma = buscarTurma(turmaId);
+        Estudante estudante = estudanteRepository.findById(matricula)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante nao encontrado"));
+
+        if (turma.getStatusTurma() == StatusTurma.ENCERRADA) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Turma encerrada nao pode ter estudantes removidos");
+        }
+        if (!turma.getEstudantes().contains(estudante)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Estudante nao esta associado a esta turma");
+        }
+
+        turma.removerEstudante(estudante);
+        return TurmaResponseDTO.de(turmaRepository.save(turma));
+    }
 }
