@@ -2,28 +2,33 @@ package _9.PsoftArena.domain.model;
 
 import java.util.Objects;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_estudante")
 public class Estudante extends Usuario {
 
-    @Id
-    private String matricula;
+    @EmbeddedId 
+    private Matricula matricula;
 
     // Construtor padrão exigido pelo JPA / Hibernate
-    public Estudante() {
-        super();
+    public Estudante(String codigoMatricula, String nome, String email) {
+        super(nome, email);
+        this.matricula = new Matricula(codigoMatricula);
     }
 
-    public Estudante(String matricula, String nome, String email) {
+    protected Estudante() {
+        // Construtor protegido para uso do JPA
+    }
+
+    public Estudante(Matricula matricula, String nome, String email) {
         super(nome, email);
         this.matricula = matricula;
     }
 
-    public String getMatricula() {
+    public Matricula getMatricula() {
         return matricula;
     }
 

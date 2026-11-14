@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import _9.PsoftArena.domain.model.Estudante;
+import _9.PsoftArena.domain.model.Matricula;
 import _9.PsoftArena.domain.model.Professor;
 import _9.PsoftArena.domain.model.StatusTurma;
 import _9.PsoftArena.domain.model.Turma;
@@ -62,9 +63,9 @@ public class TurmaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor nao encontrado"));
     }
 
-    public TurmaResponseDTO matricularEstudante(Long turmaId, String matricula) {
+    public TurmaResponseDTO matricularEstudante(Long turmaId, String codigoMatricula) {
         Turma turma = buscarTurma(turmaId);
-        Estudante estudante = estudanteRepository.findById(matricula)
+        Estudante estudante = estudanteRepository.findById(new Matricula(codigoMatricula))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante nao encontrado"));
 
         if (turma.getStatusTurma() == StatusTurma.ENCERRADA) {
@@ -93,9 +94,9 @@ public class TurmaService {
         return TurmaResponseDTO.de(turmaRepository.save(turma));
     }
 
-    public TurmaResponseDTO removerEstudante(Long turmaId, String matricula) {
+    public TurmaResponseDTO removerEstudante(Long turmaId, String codigoMatricula) {
         Turma turma = buscarTurma(turmaId);
-        Estudante estudante = estudanteRepository.findById(matricula)
+        Estudante estudante = estudanteRepository.findById(new Matricula(codigoMatricula))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante nao encontrado"));
 
         if (turma.getStatusTurma() == StatusTurma.ENCERRADA) {

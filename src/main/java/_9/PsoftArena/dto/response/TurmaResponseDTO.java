@@ -1,5 +1,6 @@
 package _9.PsoftArena.dto.response;
 
+import _9.PsoftArena.domain.model.Matricula;
 import _9.PsoftArena.domain.model.StatusTurma;
 import _9.PsoftArena.domain.model.Turma;
 
@@ -9,7 +10,7 @@ public record TurmaResponseDTO(
         String nome,
         String periodoLetivo,
         StatusTurma statusTurma,
-        String professorMatricula,
+        Matricula professorMatricula,
         String professorNome
         ) {
  

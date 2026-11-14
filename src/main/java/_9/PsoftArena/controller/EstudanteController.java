@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import _9.PsoftArena.domain.model.Estudante;
-import _9.PsoftArena.dto.EstudanteDTO;
+import _9.PsoftArena.dto.request.EstudanteCreateRequestDTO;
+import _9.PsoftArena.dto.request.EstudanteUpdateRequestDTO;
+import _9.PsoftArena.dto.response.EstudanteResponseDTO;
 import _9.PsoftArena.service.EstudanteService;
 
 @RestController
@@ -28,32 +30,32 @@ public class EstudanteController {
     }
 
     @PostMapping
-    public ResponseEntity<EstudanteDTO> cadastrarEstudante(@RequestBody EstudanteDTO dto) {
+    public ResponseEntity<EstudanteResponseDTO> cadastrarEstudante(@RequestBody EstudanteCreateRequestDTO dto) {
         Estudante estudante = estudanteService.cadastrarEstudante(
-                dto.getMatricula(),
-                dto.getNome(),
-                dto.getEmail()
+                dto.codigoMatricula(),
+                dto.nome(),
+                dto.email()
         );
-        return ResponseEntity.status(HttpStatus.CREATED).body(new EstudanteDTO(estudante));
+        return ResponseEntity.status(HttpStatus.CREATED).body(EstudanteResponseDTO.de(estudante));
     }
 
     @PutMapping("/{matricula}")
-    public ResponseEntity<EstudanteDTO> editarEstudante(
+    public ResponseEntity<EstudanteResponseDTO> editarEstudante(
             @PathVariable String matricula,
-            @RequestBody EstudanteDTO dto) {
+            @RequestBody EstudanteUpdateRequestDTO dto) {
         Estudante estudanteAtualizado = estudanteService.editarEstudante(
                 matricula,
-                dto.getNome(),
-                dto.getEmail()
+                dto.nome(),
+                dto.email()
         );
-        return ResponseEntity.ok(new EstudanteDTO(estudanteAtualizado));
+        return ResponseEntity.ok(EstudanteResponseDTO.de(estudanteAtualizado));
     }
 
     @GetMapping
-    public ResponseEntity<List<EstudanteDTO>> listarEstudantes() {
-        List<EstudanteDTO> estudantes = estudanteService.listarTodos()
+    public ResponseEntity<List<EstudanteResponseDTO>> listarEstudantes() {
+        List<EstudanteResponseDTO> estudantes = estudanteService.listarTodos()
                 .stream()
-                .map(EstudanteDTO::new)
+                .map(EstudanteResponseDTO::de)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(estudantes);
     }
