@@ -1,5 +1,6 @@
 package _9.PsoftArena.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -27,19 +28,22 @@ public class EstrategiaService {
     }
 
     private void validar(EstrategiaRequestDTO dto) {
-        if (dto.nome() == null || dto.nome().isBlank()
-                || dto.tipoEstrategia() == null
-                || dto.descricao() == null || dto.descricao().isBlank()
-                || dto.promptAvaliacao() == null || dto.promptAvaliacao().isBlank()) {
+        List<String> faltando = new ArrayList<>();
+        if (dto.nome() == null || dto.nome().isBlank()) faltando.add("nome");
+        if (dto.tipoEstrategia() == null) faltando.add("tipoEstrategia");
+        if (dto.descricao() == null || dto.descricao().isBlank()) faltando.add("descricao");
+        if (dto.promptAvaliacao() == null || dto.promptAvaliacao().isBlank()) faltando.add("promptAvaliacao");
+
+        if (!faltando.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Nome, tipo, descricao e prompt de avaliacao sao obrigatorios");
+                    "Campos obrigatórios ausentes: " + String.join(", ", faltando));
         }
-    }
+    } 
 
     public List<EstrategiaResponseDTO> listar(TipoEstrategia tipo) {
         List<Estrategia> estrategias = (tipo == null)
             ? estrategiaRepository.findAll()
-            : estrategiaRepository.findByTipo(tipo);
+            : estrategiaRepository.findByTipoEstrategia(tipo);
         return estrategias.stream().map(EstrategiaResponseDTO::de).toList();
     }
 
@@ -59,7 +63,7 @@ public class EstrategiaService {
         validar(dto);
         Estrategia estrategia = buscarEstrategia(id);
         estrategia.setNome(dto.nome());
-        estrategia.setTipo(dto.tipoEstrategia());
+        estrategia.setTipoEstrategia(dto.tipoEstrategia());
         estrategia.setDescricao(dto.descricao());
         estrategia.setPromptAvaliacao(dto.promptAvaliacao());
         return EstrategiaResponseDTO.de(estrategiaRepository.save(estrategia));

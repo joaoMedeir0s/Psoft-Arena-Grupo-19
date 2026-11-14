@@ -26,7 +26,7 @@ public class Estrategia {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoEstrategia tipo;
+    private TipoEstrategia tipoEstrategia;
 
     @Column(nullable = false, length = 1000)
     private String descricao;
@@ -37,9 +37,9 @@ public class Estrategia {
     protected Estrategia() {
     }
  
-    public Estrategia(String nome, TipoEstrategia tipo, String descricao, String promptAvaliacao) {
+    public Estrategia(String nome, TipoEstrategia tipoEstrategia, String descricao, String promptAvaliacao) {
         this.nome = nome;
-        this.tipo = tipo;
+        this.tipoEstrategia = tipoEstrategia;
         this.descricao = descricao;
         this.promptAvaliacao = promptAvaliacao;
     }

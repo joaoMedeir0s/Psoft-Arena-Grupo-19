@@ -9,6 +9,6 @@ import _9.PsoftArena.domain.model.TipoEstrategia;
 
 public interface EstrategiaRepository extends JpaRepository<Estrategia, Long> {
     
-    List<Estrategia> findByTipo(TipoEstrategia tipo);
+    List<Estrategia> findByTipoEstrategia(TipoEstrategia tipoEstrategia);
 
 }

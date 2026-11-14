@@ -12,6 +12,6 @@ public record EstrategiaResponseDTO(
 ) {
     public static EstrategiaResponseDTO de(Estrategia e) {
         return new EstrategiaResponseDTO(
-                e.getId(), e.getNome(), e.getTipo(), e.getDescricao(), e.getPromptAvaliacao());
+                e.getId(), e.getNome(), e.getTipoEstrategia(), e.getDescricao(), e.getPromptAvaliacao());
     }
 }

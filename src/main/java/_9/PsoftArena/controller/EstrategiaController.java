@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,6 @@ import _9.PsoftArena.domain.model.TipoEstrategia;
 import _9.PsoftArena.dto.request.EstrategiaRequestDTO;
 import _9.PsoftArena.dto.response.EstrategiaResponseDTO;
 import _9.PsoftArena.service.EstrategiaService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/estrategias")
@@ -35,7 +35,7 @@ public class EstrategiaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EstrategiaResponseDTO>> listar( @RequestParam(required = false) TipoEstrategia tipo) {
+    public ResponseEntity<List<EstrategiaResponseDTO>> listar(@RequestParam(required = false) TipoEstrategia tipo) {
         return ResponseEntity.ok(estrategiaService.listar(tipo));
     }
 
