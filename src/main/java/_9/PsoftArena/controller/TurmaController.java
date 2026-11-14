@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import _9.PsoftArena.controller.dto.TurmaRequestDTO;
-import _9.PsoftArena.controller.dto.TurmaResponseDTO;
+import _9.PsoftArena.dto.request.TurmaRequestDTO;
+import _9.PsoftArena.dto.response.TurmaResponseDTO;
 import _9.PsoftArena.service.TurmaService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 

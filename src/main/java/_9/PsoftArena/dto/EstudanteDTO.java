@@ -1,4 +1,4 @@
-package _9.PsoftArena.controller.dto;
+package _9.PsoftArena.dto;
 
 import _9.PsoftArena.domain.model.Estudante;
 

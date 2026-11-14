@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import _9.PsoftArena.controller.dto.EstrategiaRequestDTO;
-import _9.PsoftArena.controller.dto.EstrategiaResponseDTO;
 import _9.PsoftArena.domain.model.TipoEstrategia;
+import _9.PsoftArena.dto.request.EstrategiaRequestDTO;
+import _9.PsoftArena.dto.response.EstrategiaResponseDTO;
 import _9.PsoftArena.service.EstrategiaService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 

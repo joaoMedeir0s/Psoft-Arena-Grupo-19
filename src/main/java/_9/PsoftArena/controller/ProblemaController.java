@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import _9.PsoftArena.controller.dto.ProblemaDTO;
 import _9.PsoftArena.domain.model.Problema;
+import _9.PsoftArena.dto.request.ProblemaRequestDTO;
+import _9.PsoftArena.dto.response.ProblemaResponseDTO;
 import _9.PsoftArena.service.ProblemaService;
 
 @RestController
@@ -29,33 +30,33 @@ public class ProblemaController {
     }
 
     @PostMapping
-    public ResponseEntity<ProblemaDTO> cadastrarProblema(@RequestBody ProblemaDTO dto) {
+    public ResponseEntity<ProblemaResponseDTO> cadastrarProblema(@RequestBody ProblemaRequestDTO dto) {
         Problema problema = problemaService.cadastrarProblema(
-                dto.getTitulo(),
-                dto.getDescricao(),
-                dto.getRequisitosFuncionais(),
-                dto.getRequisitosProjeto()
+                dto.titulo(),
+                dto.descricao(),
+                dto.requisitosFuncionais(),
+                dto.requisitosProjeto()
         );
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ProblemaDTO(problema));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProblemaResponseDTO.de(problema));
     }
 
     @GetMapping
-    public ResponseEntity<List<ProblemaDTO>> listarProblemas() {
-        List<ProblemaDTO> problemas = problemaService.listarTodos()
+    public ResponseEntity<List<ProblemaResponseDTO>> listarProblemas() {
+        List<ProblemaResponseDTO> problemas = problemaService.listarTodos()
                 .stream()
-                .map(ProblemaDTO::new)
+                .map(ProblemaResponseDTO::de)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(problemas);
     }
 
     @PatchMapping("/{id}/inativar")
-    public ResponseEntity<ProblemaDTO> inativarProblema(@PathVariable String id) {
+    public ResponseEntity<ProblemaResponseDTO> inativarProblema(@PathVariable Long id) {
         Problema problemaInativado = problemaService.inativarProblema(id);
-        return ResponseEntity.ok(new ProblemaDTO(problemaInativado));
+        return ResponseEntity.ok(ProblemaResponseDTO.de(problemaInativado));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removerProblema(@PathVariable String id) {
+    public ResponseEntity<Void> removerProblema(@PathVariable Long id) {
         problemaService.removerProblema(id);
         return ResponseEntity.noContent().build();
     }

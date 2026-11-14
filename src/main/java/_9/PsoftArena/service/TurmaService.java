@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import _9.PsoftArena.controller.dto.TurmaRequestDTO;
-import _9.PsoftArena.controller.dto.TurmaResponseDTO;
 import _9.PsoftArena.domain.model.Estudante;
 import _9.PsoftArena.domain.model.Professor;
 import _9.PsoftArena.domain.model.StatusTurma;
 import _9.PsoftArena.domain.model.Turma;
+import _9.PsoftArena.dto.request.TurmaRequestDTO;
+import _9.PsoftArena.dto.response.TurmaResponseDTO;
 import _9.PsoftArena.repository.EstudanteRepository;
 import _9.PsoftArena.repository.ProfessorRepository;
 import _9.PsoftArena.repository.TurmaRepository;

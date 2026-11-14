@@ -1,4 +1,4 @@
-package _9.PsoftArena.controller.dto;
+package _9.PsoftArena.dto.response;
 
 import _9.PsoftArena.domain.model.Estrategia;
 import _9.PsoftArena.domain.model.TipoEstrategia;

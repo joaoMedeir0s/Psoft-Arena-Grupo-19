@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import _9.PsoftArena.controller.dto.EstrategiaRequestDTO;
-import _9.PsoftArena.controller.dto.EstrategiaResponseDTO;
 import _9.PsoftArena.domain.model.Estrategia;
 import _9.PsoftArena.domain.model.TipoEstrategia;
+import _9.PsoftArena.dto.request.EstrategiaRequestDTO;
+import _9.PsoftArena.dto.response.EstrategiaResponseDTO;
 import _9.PsoftArena.repository.EstrategiaRepository;
 
 @Service
@@ -48,6 +48,9 @@ public class EstrategiaService {
     }
 
     private Estrategia buscarEstrategia(Long id) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID da estrategia nao pode ser nulo");
+        }
         return estrategiaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estrategia nao encontrada"));
     }

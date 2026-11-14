@@ -2,10 +2,10 @@ package _9.PsoftArena.service;
 
 import _9.PsoftArena.domain.model.Problema;
 import _9.PsoftArena.repository.ProblemaRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProblemaService {
@@ -16,19 +16,25 @@ public class ProblemaService {
     }
 
     public Problema cadastrarProblema(String titulo, String descricao, String reqFunc, String reqProj) {
-        String id = UUID.randomUUID().toString();
-        Problema novoProblema = new Problema(id, titulo, descricao, reqFunc, reqProj);
+        Problema novoProblema = new Problema(titulo, descricao, reqFunc, reqProj);
         return repository.save(novoProblema); // Usa save do JPA
     }
 
-    public Problema inativarProblema(String id) {
+    public Problema inativarProblema(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID do problema não pode ser nulo");
+        }
         Problema problema = repository.findById(id) // Usa findById do JPA
                 .orElseThrow(() -> new IllegalArgumentException("Problema não encontrado"));
         problema.inativar();
         return repository.save(problema);
     }
 
-    public void removerProblema(String id) {
+    public void removerProblema(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID do problema não pode ser nulo");
+        }
+
         Problema problema = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Problema não encontrado"));
 

@@ -3,6 +3,8 @@ package _9.PsoftArena.domain.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -11,7 +13,9 @@ import jakarta.persistence.Table;
 public class Problema {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String titulo;
     private String descricao;
     private String requisitosFuncionais;
@@ -26,8 +30,7 @@ public class Problema {
     public Problema() {
     }
 
-    public Problema(String id, String titulo, String descricao, String requisitosFuncionais, String requisitosProjeto) {
-        this.id = id;
+    public Problema(String titulo, String descricao, String requisitosFuncionais, String requisitosProjeto) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.requisitosFuncionais = requisitosFuncionais;
@@ -36,7 +39,7 @@ public class Problema {
         this.utilizadoEmAtividade = false;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 

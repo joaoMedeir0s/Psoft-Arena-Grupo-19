@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import _9.PsoftArena.controller.dto.EstudanteDTO;
 import _9.PsoftArena.domain.model.Estudante;
+import _9.PsoftArena.dto.EstudanteDTO;
 import _9.PsoftArena.service.EstudanteService;
 
 @RestController

@@ -1,4 +1,4 @@
-package _9.PsoftArena.controller.dto;
+package _9.PsoftArena.dto.response;
 
 import _9.PsoftArena.domain.model.StatusTurma;
 import _9.PsoftArena.domain.model.Turma;
