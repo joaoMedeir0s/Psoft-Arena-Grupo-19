@@ -59,4 +59,10 @@ public class EstudanteController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(estudantes);
     }
+
+    @GetMapping ("/{matricula}")
+    public ResponseEntity<EstudanteResponseDTO> buscarEstudante(@PathVariable String matricula) {
+        Estudante estudante = estudanteService.buscarPorMatricula(matricula);
+        return ResponseEntity.ok(EstudanteResponseDTO.de(estudante));
+    }
 }

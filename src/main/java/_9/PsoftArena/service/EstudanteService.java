@@ -41,4 +41,13 @@ public class EstudanteService {
     public List<Estudante> listarTodos() {
         return repository.findAll(); // Usa findAll do JPA
     }
+
+    public Estudante buscarPorMatricula(String codigoMatricula) {
+        if (codigoMatricula == null || codigoMatricula.isEmpty()) {
+            throw new IllegalArgumentException("Código da matrícula não pode ser nulo ou vazio");
+        }
+        Matricula matricula = new Matricula(codigoMatricula);
+        return repository.findById(matricula)
+                .orElseThrow(() -> new IllegalArgumentException("Estudante não encontrado"));
+    }
 }
