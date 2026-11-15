@@ -1,0 +1,53 @@
+package _9.PsoftArena.service;
+
+import _9.PsoftArena.domain.model.Estudante;
+import _9.PsoftArena.domain.model.Matricula;
+import _9.PsoftArena.repository.EstudanteRepository;
+
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class EstudanteService {
+    private final EstudanteRepository repository;
+
+    public EstudanteService(EstudanteRepository repository) {
+        this.repository = repository;
+    }
+
+    public Estudante cadastrarEstudante(String codigoMatricula, String nome, String email) {
+        Matricula matricula = new Matricula(codigoMatricula);
+        if (repository.existsById(matricula)) { // Ou repository.existsByMatricula(matricula)
+            throw new IllegalStateException("Já existe um estudante cadastrado com a matrícula: " + codigoMatricula);
+        }
+        Estudante estudante = new Estudante(codigoMatricula, nome, email);
+        return repository.save(estudante); // Usa save do JPA
+    }
+
+    public Estudante editarEstudante(String codigoMatricula, String novoNome, String novoEmail) {
+        if (codigoMatricula == null || codigoMatricula.isEmpty()) {
+            throw new IllegalArgumentException("Código da matrícula não pode ser nulo ou vazio");
+        }
+        Matricula matricula = new Matricula(codigoMatricula);
+        Estudante estudante = repository.findById(matricula) // Usa findById do JPA
+                .orElseThrow(() -> new IllegalArgumentException("Estudante não encontrado"));
+
+        estudante.setNome(novoNome);
+        estudante.setEmail(novoEmail);
+        return repository.save(estudante);
+    }
+
+    public List<Estudante> listarTodos() {
+        return repository.findAll(); // Usa findAll do JPA
+    }
+
+    public Estudante buscarPorMatricula(String codigoMatricula) {
+        if (codigoMatricula == null || codigoMatricula.isEmpty()) {
+            throw new IllegalArgumentException("Código da matrícula não pode ser nulo ou vazio");
+        }
+        Matricula matricula = new Matricula(codigoMatricula);
+        return repository.findById(matricula)
+                .orElseThrow(() -> new IllegalArgumentException("Estudante não encontrado"));
+    }
+}

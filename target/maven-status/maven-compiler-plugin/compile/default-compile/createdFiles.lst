@@ -1,0 +1,13 @@
+_9\PsoftArena\service\EstudanteService.class
+_9\PsoftArena\controller\EstudanteController.class
+_9\PsoftArena\controller\GlobalExceptionHandler.class
+_9\PsoftArena\controller\dto\EstudanteDTO.class
+_9\PsoftArena\domain\model\Estudante.class
+_9\PsoftArena\domain\model\StatusProblema.class
+_9\PsoftArena\controller\dto\ProblemaDTO.class
+_9\PsoftArena\PsoftArenaApplication.class
+_9\PsoftArena\service\ProblemaService.class
+_9\PsoftArena\domain\model\Problema.class
+_9\PsoftArena\repository\ProblemaRepository.class
+_9\PsoftArena\controller\ProblemaController.class
+_9\PsoftArena\repository\EstudanteRepository.class

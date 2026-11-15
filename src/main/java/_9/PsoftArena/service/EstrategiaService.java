@@ -1,0 +1,80 @@
+package _9.PsoftArena.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import _9.PsoftArena.domain.model.Estrategia;
+import _9.PsoftArena.domain.model.TipoEstrategia;
+import _9.PsoftArena.dto.request.EstrategiaRequestDTO;
+import _9.PsoftArena.dto.response.EstrategiaResponseDTO;
+import _9.PsoftArena.repository.EstrategiaRepository;
+
+@Service
+public class EstrategiaService {
+    private final EstrategiaRepository estrategiaRepository;
+ 
+    public EstrategiaService(EstrategiaRepository estrategiaRepository) {
+        this.estrategiaRepository = estrategiaRepository;
+    }
+
+    public EstrategiaResponseDTO criar(EstrategiaRequestDTO dto) {
+        validar(dto);
+        Estrategia estrategia = new Estrategia(dto.nome(), dto.tipoEstrategia(), dto.descricao(), dto.promptAvaliacao());
+        return EstrategiaResponseDTO.de(estrategiaRepository.save(estrategia));
+    }
+
+    private void validar(EstrategiaRequestDTO dto) {
+        List<String> faltando = new ArrayList<>();
+        if (dto.nome() == null || dto.nome().isBlank()) faltando.add("nome");
+        if (dto.tipoEstrategia() == null) faltando.add("tipoEstrategia");
+        if (dto.descricao() == null || dto.descricao().isBlank()) faltando.add("descricao");
+        if (dto.promptAvaliacao() == null || dto.promptAvaliacao().isBlank()) faltando.add("promptAvaliacao");
+
+        if (!faltando.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Campos obrigatórios ausentes: " + String.join(", ", faltando));
+        }
+    } 
+
+    public List<EstrategiaResponseDTO> listar(TipoEstrategia tipo) {
+        List<Estrategia> estrategias = (tipo == null)
+            ? estrategiaRepository.findAll()
+            : estrategiaRepository.findByTipoEstrategia(tipo);
+        return estrategias.stream().map(EstrategiaResponseDTO::de).toList();
+    }
+
+    public EstrategiaResponseDTO buscar(Long id) {
+        return EstrategiaResponseDTO.de(buscarEstrategia(id));
+    }
+
+    private Estrategia buscarEstrategia(Long id) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID da estrategia nao pode ser nulo");
+        }
+        return estrategiaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estrategia nao encontrada"));
+    }
+
+    public EstrategiaResponseDTO atualizar(Long id, EstrategiaRequestDTO dto) {
+        validar(dto);
+        Estrategia estrategia = buscarEstrategia(id);
+        estrategia.setNome(dto.nome());
+        estrategia.setTipoEstrategia(dto.tipoEstrategia());
+        estrategia.setDescricao(dto.descricao());
+        estrategia.setPromptAvaliacao(dto.promptAvaliacao());
+        return EstrategiaResponseDTO.de(estrategiaRepository.save(estrategia));
+    }
+
+     public EstrategiaResponseDTO alterarPrompt(Long id, String novoPrompt) {
+        if (novoPrompt == null || novoPrompt.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O prompt de avaliacao e obrigatorio");
+        }
+        Estrategia estrategia = buscarEstrategia(id);
+        estrategia.setPromptAvaliacao(novoPrompt);
+        return EstrategiaResponseDTO.de(estrategiaRepository.save(estrategia));
+    }
+}
