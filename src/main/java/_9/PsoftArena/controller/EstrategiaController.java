@@ -20,7 +20,7 @@ import _9.PsoftArena.dto.response.EstrategiaResponseDTO;
 import _9.PsoftArena.service.EstrategiaService;
 
 @RestController
-@RequestMapping("/estrategias")
+@RequestMapping("/api/estrategias")
 public class EstrategiaController {
     
     private final EstrategiaService estrategiaService;

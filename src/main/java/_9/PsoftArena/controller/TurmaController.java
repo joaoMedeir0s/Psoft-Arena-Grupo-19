@@ -1,6 +1,7 @@
 package _9.PsoftArena.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +11,14 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import _9.PsoftArena.dto.request.TurmaRequestDTO;
+import _9.PsoftArena.dto.response.EstudanteResponseDTO;
 import _9.PsoftArena.dto.response.TurmaResponseDTO;
 import _9.PsoftArena.service.TurmaService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController 
 @RequestMapping ("/api/turmas")
@@ -38,28 +40,33 @@ public class TurmaController {
         return ResponseEntity.ok(turmaService.listar());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TurmaResponseDTO> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(turmaService.buscar(id));
+    @GetMapping("/{codigo}")
+    public ResponseEntity<TurmaResponseDTO> buscar(@PathVariable Long codigo) {
+        return ResponseEntity.ok(turmaService.buscar(codigo));
     }
 
-    @PatchMapping("/{id}/encerrar")
-    public ResponseEntity<TurmaResponseDTO> encerrar(@PathVariable Long id) {
-        return ResponseEntity.ok(turmaService.encerrar(id));
+    @PatchMapping("/{codigo}/encerrar")
+    public ResponseEntity<TurmaResponseDTO> encerrar(@PathVariable Long codigo) {
+        return ResponseEntity.ok(turmaService.encerrar(codigo));
     }
 
-    @PostMapping("/{id}/estudantes/{matricula}")
-    public ResponseEntity<TurmaResponseDTO> matricular(@PathVariable Long id, @PathVariable String matricula) {
-        return ResponseEntity.ok(turmaService.matricularEstudante(id, matricula));
+    @PostMapping("/{codigo}/estudantes/{matricula}")
+    public ResponseEntity<TurmaResponseDTO> matricular(@PathVariable Long codigo, @PathVariable String matricula) {
+        return ResponseEntity.ok(turmaService.matricularEstudante(codigo, matricula));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TurmaResponseDTO> atualizar(@PathVariable Long id, @RequestBody TurmaRequestDTO dto) {
-        return ResponseEntity.ok(turmaService.atualizar(id, dto));
+    @PutMapping("/{codigo}")
+    public ResponseEntity<TurmaResponseDTO> atualizar(@PathVariable Long codigo, @RequestBody TurmaRequestDTO dto) {
+        return ResponseEntity.ok(turmaService.atualizar(codigo, dto));
     }
 
-    @DeleteMapping("/{id}/estudantes/{matricula}")
-    public ResponseEntity<TurmaResponseDTO> removerEstudante(@PathVariable Long id, @PathVariable String matricula) {
-        return ResponseEntity.ok(turmaService.removerEstudante(id, matricula));
+    @DeleteMapping("/{codigo}/estudantes/{matricula}")
+    public ResponseEntity<TurmaResponseDTO> removerEstudante(@PathVariable Long codigo, @PathVariable String matricula) {
+        return ResponseEntity.ok(turmaService.removerEstudante(codigo, matricula));
+    }
+
+    @GetMapping("/api/{codigo}/estudantes")
+    public ResponseEntity<List<EstudanteResponseDTO>> listarEstudantesTurma(@PathVariable Long codigo) {
+        return ResponseEntity.ok(turmaService.listarEstudantesTurma(codigo));
     }
 }

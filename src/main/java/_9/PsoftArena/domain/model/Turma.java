@@ -1,7 +1,7 @@
 package _9.PsoftArena.domain.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,9 +27,11 @@ public class Turma {
     @Column(nullable = false)
     private String nome;
 
-    @Id 
+    @Id
+    @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long codigo;
+
 
     @Column(nullable = false)
     private String periodoLetivo;
@@ -43,17 +45,17 @@ public class Turma {
             name = "turma_estudante",
             joinColumns = @JoinColumn(name = "turma_id"),
             inverseJoinColumns = @JoinColumn(name = "estudante_id"))
-    private List<Estudante> estudantes = new ArrayList<>();
-
-     @Column(nullable = false, unique = true)
-    private String codigo;
+    private Set<Estudante> estudantes = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "professor_matricula", nullable = false)
     private Professor professor;
 
-    public Turma(String codigo, String nome, String periodoLetivo, Professor professor) {
-        this.codigo = codigo;
+
+    protected Turma(){
+    }
+
+    public Turma(String nome, String periodoLetivo, Professor professor) {
         this.nome = nome;
         this.periodoLetivo = periodoLetivo;
         this.statusTurma = StatusTurma.ATIVA; 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import _9.PsoftArena.domain.model.Estudante;
@@ -12,6 +13,7 @@ import _9.PsoftArena.domain.model.Professor;
 import _9.PsoftArena.domain.model.StatusTurma;
 import _9.PsoftArena.domain.model.Turma;
 import _9.PsoftArena.dto.request.TurmaRequestDTO;
+import _9.PsoftArena.dto.response.EstudanteResponseDTO;
 import _9.PsoftArena.dto.response.TurmaResponseDTO;
 import _9.PsoftArena.repository.EstudanteRepository;
 import _9.PsoftArena.repository.ProfessorRepository;
@@ -30,15 +32,18 @@ public class TurmaService {
         this.professorRepository = professorRepository;
     }
 
+    // O que vai impedir de se criarem turmas iguais, sendo que o código é gerado automaticamente?
+    // Nome da turma + período letivo 
     public TurmaResponseDTO criar(TurmaRequestDTO turmaRequestDTO) {
-        Professor professor = buscarProfessor(turmaRequestDTO.professorMatricula()); 
-        if (turmaRepository.existsByCodigo(turmaRequestDTO.codigo())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe turma com este codigo");
+        Professor professor = buscarProfessor(turmaRequestDTO.matriculaDocente()); 
+        if (turmaRepository.existsByNomeAndPeriodoLetivo(turmaRequestDTO.nome(), turmaRequestDTO.periodoLetivo())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Turma com o mesmo nome e período letivo já existe");
         }
-        Turma turma = new Turma(turmaRequestDTO.codigo(), turmaRequestDTO.nome(), turmaRequestDTO.periodoLetivo(), professor);
+        Turma turma = new Turma(turmaRequestDTO.nome(), turmaRequestDTO.periodoLetivo(), professor);
         return TurmaResponseDTO.de(turmaRepository.save(turma));
     }
 
+    @Transactional(readOnly = true)
     public List<TurmaResponseDTO> listar() {
         return turmaRepository.findAll().stream().map(TurmaResponseDTO::de).toList();
     }
@@ -53,25 +58,20 @@ public class TurmaService {
         return TurmaResponseDTO.de(turmaRepository.save(turma));
     }
 
-    private Turma buscarTurma(Long id) {
-        return turmaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma nao encontrada"));
-    }
-
     private Professor buscarProfessor(String matriculaDocente) {
-        return professorRepository.findById(matriculaDocente)
+        return professorRepository.findById(new Matricula(matriculaDocente))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor nao encontrado"));
     }
 
-    public TurmaResponseDTO matricularEstudante(Long turmaId, String codigoMatricula) {
-        Turma turma = buscarTurma(turmaId);
-        Estudante estudante = estudanteRepository.findById(new Matricula(codigoMatricula))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante nao encontrado"));
+    public TurmaResponseDTO matricularEstudante(Long codigo, String codigoMatricula) {
+        Turma turma = buscarTurma(codigo);
+        Estudante estudante = buscarEstudante(codigoMatricula);
 
         if (turma.getStatusTurma() == StatusTurma.ENCERRADA) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Turma encerrada nao pode receber novos estudantes");
         }
+
         if (!turma.podeReceberMatriculas(estudante)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Estudante ja matriculado nesta turma");
         }
@@ -80,29 +80,41 @@ public class TurmaService {
         return TurmaResponseDTO.de(turmaRepository.save(turma));
     }
 
-    public TurmaResponseDTO atualizar(Long id, TurmaRequestDTO dto) {
-        Turma turma = buscarTurma(id);
- 
-        if (!turma.getCodigo().equals(dto.codigo()) && turmaRepository.existsByCodigo(dto.codigo())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe turma com este codigo");
+    private Estudante buscarEstudante(String codigoMatricula) {
+        if (codigoMatricula == null || codigoMatricula.isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Matricula nao pode ser nulo");
         }
+
+        return estudanteRepository.findById(new Matricula(codigoMatricula))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante nao encontrado"));
+    }
+
+    private Turma buscarTurma(Long id) {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID da turma nao pode ser nulo");
+        }
+        return turmaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma nao encontrada"));
+    }
+
+    public TurmaResponseDTO atualizar(Long codigo, TurmaRequestDTO dto) {
+        Turma turma = buscarTurma(codigo);
  
-        turma.setCodigo(dto.codigo());
         turma.setNome(dto.nome());
         turma.setPeriodoLetivo(dto.periodoLetivo());
-        turma.setProfessor(buscarProfessor(dto.professorMatricula()));
+        turma.setProfessor(buscarProfessor(dto.matriculaDocente()));
         return TurmaResponseDTO.de(turmaRepository.save(turma));
     }
 
-    public TurmaResponseDTO removerEstudante(Long turmaId, String codigoMatricula) {
-        Turma turma = buscarTurma(turmaId);
-        Estudante estudante = estudanteRepository.findById(new Matricula(codigoMatricula))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudante nao encontrado"));
+    public TurmaResponseDTO removerEstudante(Long codigo, String codigoMatricula) {
+        Turma turma = buscarTurma(codigo);
+        Estudante estudante = buscarEstudante(codigoMatricula);
 
         if (turma.getStatusTurma() == StatusTurma.ENCERRADA) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Turma encerrada nao pode ter estudantes removidos");
         }
+
         if (!turma.getEstudantes().contains(estudante)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Estudante nao esta associado a esta turma");
@@ -110,5 +122,13 @@ public class TurmaService {
 
         turma.removerEstudante(estudante);
         return TurmaResponseDTO.de(turmaRepository.save(turma));
+    }
+
+    @Transactional(readOnly = true)
+    public List<EstudanteResponseDTO> listarEstudantesTurma(Long codigo) {
+        Turma turma = buscarTurma(codigo);
+        return turma.getEstudantes().stream()
+            .map(EstudanteResponseDTO::de)
+            .toList();
     }
 }

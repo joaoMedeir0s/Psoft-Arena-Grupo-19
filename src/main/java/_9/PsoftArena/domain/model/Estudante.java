@@ -1,17 +1,25 @@
 package _9.PsoftArena.domain.model;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "tb_estudante")
 public class Estudante extends Usuario {
 
     @EmbeddedId 
     private Matricula matricula;
+
+    @ManyToMany
+    private Set<Turma> turmas = new HashSet<>();
 
     // Construtor padrão exigido pelo JPA / Hibernate
     public Estudante(String codigoMatricula, String nome, String email) {

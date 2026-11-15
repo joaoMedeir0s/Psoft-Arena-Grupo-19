@@ -1,28 +1,25 @@
 package _9.PsoftArena.dto.response;
 
-import _9.PsoftArena.domain.model.Matricula;
 import _9.PsoftArena.domain.model.StatusTurma;
 import _9.PsoftArena.domain.model.Turma;
 
 public record TurmaResponseDTO(
-        Long id,
-        String codigo,
         String nome,
+        Long codigo,
         String periodoLetivo,
         StatusTurma statusTurma,
-        Matricula professorMatricula,
-        String professorNome
+        String professorNome,
+        String codigoMatriculaDocente
         ) {
  
     public static TurmaResponseDTO de(Turma turma) {
         return new TurmaResponseDTO(
-                turma.getId(),
-                turma.getCodigo(),
                 turma.getNome(),
+                turma.getCodigo(),
                 turma.getPeriodoLetivo(),
                 turma.getStatusTurma(),
-                turma.getProfessor().getMatriculaDocente(),
-                turma.getProfessor().getNome()
+                turma.getProfessor().getNome(),
+                turma.getProfessor().getMatriculaDocente().getCodigo()
         );
     }
 }

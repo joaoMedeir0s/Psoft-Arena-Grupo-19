@@ -8,5 +8,6 @@ import _9.PsoftArena.domain.model.Turma;
 @Repository 
 public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
-    boolean existsByCodigo(String codigo);
+    boolean existsByNome(String nome);
+    boolean existsByNomeAndPeriodoLetivo(String nome, String periodoLetivo);
 }
