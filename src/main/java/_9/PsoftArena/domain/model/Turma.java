@@ -66,6 +66,10 @@ public class Turma {
         this.statusTurma = StatusTurma.ENCERRADA;
     }
 
+    public boolean isAtiva() {
+        return this.statusTurma == StatusTurma.ATIVA;
+    }
+
     public boolean podeReceberMatriculas(Estudante estudante) {
         return statusTurma == StatusTurma.ATIVA && !estudantes.contains(estudante);
     }
@@ -93,5 +97,9 @@ public class Turma {
             throw new IllegalStateException("Estudante nao esta associado a esta turma");
         }
         estudantes.remove(estudante);
+    }
+
+    public boolean podeParticiparAtividade(Estudante estudante) {
+        return estudante != null && this.estudantes.contains(estudante);
     }
 }

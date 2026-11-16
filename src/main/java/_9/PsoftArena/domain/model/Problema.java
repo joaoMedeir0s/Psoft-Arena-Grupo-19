@@ -7,9 +7,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
 @Table(name = "tb_problema")
+@Getter
 public class Problema {
 
     @Id
@@ -39,30 +41,7 @@ public class Problema {
         this.utilizadoEmAtividade = false;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public String getRequisitosFuncionais() {
-        return requisitosFuncionais;
-    }
-
-    public String getRequisitosProjeto() {
-        return requisitosProjeto;
-    }
-
-    public StatusProblema getStatus() {
-        return status;
-    }
-
+   // --- Getters ---
     public boolean isAtivo() {
         return this.status == StatusProblema.ATIVO;
     }
@@ -71,11 +50,46 @@ public class Problema {
         return utilizadoEmAtividade;
     }
 
+    // --- Setters dos atributos editáveis (US1) ---
+    public void setTitulo(String titulo) {
+        if (titulo == null || titulo.isBlank()) {
+            throw new IllegalArgumentException("O título do problema não pode ser vazio.");
+        }
+        this.titulo = titulo;
+    }
+
+    public void setDescricao(String descricao) {
+        if (descricao == null || descricao.isBlank()) {
+            throw new IllegalArgumentException("A descrição do problema não pode ser vazia.");
+        }
+        this.descricao = descricao;
+    }
+
+    public void setRequisitosFuncionais(String requisitosFuncionais) {
+        if (requisitosFuncionais == null || requisitosFuncionais.isBlank()) {
+            throw new IllegalArgumentException("Os requisitos funcionais não podem ser vazios.");
+        }
+        this.requisitosFuncionais = requisitosFuncionais;
+    }
+
+    public void setRequisitosProjeto(String requisitosProjeto) {
+        if (requisitosProjeto == null || requisitosProjeto.isBlank()) {
+            throw new IllegalArgumentException("Os requisitos de projeto não podem ser vazios.");
+        }
+        this.requisitosProjeto = requisitosProjeto;
+    }
+
+    // --- Métodos de Domínio ---
     public void inativar() {
         this.status = StatusProblema.INATIVO;
+    }
+
+    public void marcarComoUtilizado() {
+        this.utilizadoEmAtividade = true;
     }
 
     public boolean podeSerRemovido() {
         return !utilizadoEmAtividade;
     }
+
 }

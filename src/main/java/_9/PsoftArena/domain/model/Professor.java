@@ -13,13 +13,13 @@ import lombok.Getter;
 @Getter
 @Table(name = "tb_professor")
 public class Professor extends Usuario {
-   
+
     @EmbeddedId
     private Matricula matriculaDocente;
 
     @OneToMany(mappedBy = "professor")
     private Set<Turma> turmas = new HashSet<>();
- 
+
     protected Professor() {
     }
 
@@ -29,4 +29,3 @@ public class Professor extends Usuario {
         this.matriculaDocente = new Matricula(codigoMatriculaDocente);
     }
 }
- 
