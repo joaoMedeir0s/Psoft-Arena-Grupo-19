@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 public class ProcessadorSubmissoes {
 
     private final FilaAvaliacao filaAvaliacao;
-    private final SubmissaoService submissaoService;
+    private final AvaliadorSubmissao avaliadorSubmissao;
 
     public ProcessadorSubmissoes(
             FilaAvaliacao filaAvaliacao,
-            SubmissaoService submissaoService) {
+            AvaliadorSubmissao avaliadorSubmissao) {
 
         this.filaAvaliacao = filaAvaliacao;
-        this.submissaoService = submissaoService;
+        this.avaliadorSubmissao = avaliadorSubmissao;
     }
 
     @Scheduled(fixedDelay = 500)
@@ -22,28 +22,9 @@ public class ProcessadorSubmissoes {
 
         Long submissaoId = filaAvaliacao.poll();
 
-        if (submissaoId == null) {
-            return;
+        if (submissaoId != null) {
+            avaliadorSubmissao.avaliar(submissaoId);
         }
 
-        try {
-            System.out.println(
-                "[PROCESSADOR] Iniciando submissão " + submissaoId
-            );
-
-            submissaoService.iniciarProcessamento(submissaoId);
-
-        } catch (Exception e) {
-
-            System.err.println(
-                "[ERRO] Falha ao processar submissão " +
-                submissaoId + ": " + e.getMessage()
-            );
-
-            submissaoService.registrarFalha(
-                submissaoId,
-                e.getMessage()
-            );
-        }
     }
 }
