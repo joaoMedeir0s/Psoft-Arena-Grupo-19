@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.context.ApplicationEventPublisher;
 
 import _9.PsoftArena.domain.model.Atividade;
 import _9.PsoftArena.domain.model.Estudante;
@@ -17,6 +18,7 @@ import _9.PsoftArena.repository.EstudanteRepository;
 import _9.PsoftArena.repository.SubmissaoRepository;
 import _9.PsoftArena.dto.request.SubmissaoRequest;
 import _9.PsoftArena.dto.response.SubmissaoResponse;
+import _9.PsoftArena.domain.model.AvaliacaoFinal;
 
 @Service
 public class SubmissaoService {
@@ -25,17 +27,20 @@ public class SubmissaoService {
     private final AtividadeRepository atividadeRepository;
     private final EstudanteRepository estudanteRepository;
     private final List<NotificadorSubmissao> notificadores;
+    private final ApplicationEventPublisher eventPublisher;
     // Quando o colega integrar a fila: private final FilaAvaliacao filaAvaliacao;
 
     public SubmissaoService(
             SubmissaoRepository submissaoRepository,
             AtividadeRepository atividadeRepository,
             EstudanteRepository estudanteRepository,
-            List<NotificadorSubmissao> notificadores) {
+            List<NotificadorSubmissao> notificadores,
+            ApplicationEventPublisher eventPublisher) {
         this.submissaoRepository = submissaoRepository;
         this.atividadeRepository = atividadeRepository;
         this.estudanteRepository = estudanteRepository;
         this.notificadores = notificadores;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -67,13 +72,21 @@ public class SubmissaoService {
             // Transita de SUBMETIDA para EM_FILA registrando no histórico e notificando
             novaSubmissao.enfileirar();
 
+            // Salva inicialmente como SUBMETIDA
             Submissao salva = submissaoRepository.save(novaSubmissao);
 
-            // Ponto de integração com a fila assíncrona do colega (US9 / US10):
-            // filaAvaliacao.enfileirar(salva);
+            // Encaminha para a fila, alterando para EM_FILA
+            salva.enfileirar();
 
-            return SubmissaoResponse.fromEntity(salva);
+            // Persiste a mudança de status e o histórico
+            submissaoRepository.save(salva);
 
+            // Publica evento que será recebido após o commit
+            eventPublisher.publishEvent(
+                new SubmissaoEnfileiradaEvent(salva.getId())
+);
+
+return SubmissaoResponse.fromEntity(salva);
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -137,4 +150,48 @@ public class SubmissaoService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Estudante não encontrado com matrícula: " + codigoMatricula));
     }
+
+    @Transactional
+public void iniciarProcessamento(Long id) {
+
+    Submissao submissao = submissaoRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Submissão não encontrada."
+        ));
+
+    submissao.iniciarProcessamento();
+
+    submissaoRepository.save(submissao);
+}
+
+    @Transactional
+    public void registrarFalha(Long id, String motivo) {
+
+        Submissao submissao = submissaoRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Submissão não encontrada."
+        ));
+
+    submissao.registrarFalha(motivo);
+
+    submissaoRepository.save(submissao);
+}
+
+    @Transactional
+public void concluirAvaliacao(
+        Long id,
+        AvaliacaoFinal avaliacaoFinal) {
+
+    Submissao submissao = submissaoRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Submissão não encontrada."
+        ));
+
+    submissao.concluir(avaliacaoFinal);
+
+    submissaoRepository.save(submissao);
+}
 }

@@ -133,9 +133,22 @@ public class Submissao {
         alterarStatus(StatusSubmissao.CONCLUIDA, "Avaliação concluída com sucesso.");
     }
 
+
     public void registrarFalha(String motivo) {
-        alterarStatus(StatusSubmissao.FALHA, "Falha na avaliação: " + motivo);
+
+    if (this.statusAtual != StatusSubmissao.PROCESSANDO
+            && this.statusAtual != StatusSubmissao.EM_FILA) {
+
+        throw new IllegalStateException(
+            "A submissão precisa estar EM_FILA ou PROCESSANDO para registrar uma falha."
+        );
     }
+
+    alterarStatus(
+        StatusSubmissao.FALHA,
+        "Falha na avaliação: " + motivo
+    );
+}
 
     public void adicionarObservador(NotificadorSubmissao observador) {
         if (observador != null && !this.observadores.contains(observador)) {
