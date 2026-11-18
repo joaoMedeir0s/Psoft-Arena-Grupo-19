@@ -2,23 +2,24 @@ package _9.PsoftArena.service;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.context.ApplicationEventPublisher;
 
 import _9.PsoftArena.domain.model.Atividade;
+import _9.PsoftArena.domain.model.AvaliacaoFinal;
 import _9.PsoftArena.domain.model.Estudante;
 import _9.PsoftArena.domain.model.Matricula;
 import _9.PsoftArena.domain.model.NotificadorSubmissao;
 import _9.PsoftArena.domain.model.Submissao;
+import _9.PsoftArena.dto.request.SubmissaoRequest;
+import _9.PsoftArena.dto.response.SubmissaoResponse;
 import _9.PsoftArena.repository.AtividadeRepository;
 import _9.PsoftArena.repository.EstudanteRepository;
 import _9.PsoftArena.repository.SubmissaoRepository;
-import _9.PsoftArena.dto.request.SubmissaoRequest;
-import _9.PsoftArena.dto.response.SubmissaoResponse;
-import _9.PsoftArena.domain.model.AvaliacaoFinal;
 
 @Service
 public class SubmissaoService {
@@ -28,19 +29,21 @@ public class SubmissaoService {
     private final EstudanteRepository estudanteRepository;
     private final List<NotificadorSubmissao> notificadores;
     private final ApplicationEventPublisher eventPublisher;
-    // Quando o colega integrar a fila: private final FilaAvaliacao filaAvaliacao;
+    private final FilaAvaliacao filaAvaliacao;
 
     public SubmissaoService(
             SubmissaoRepository submissaoRepository,
             AtividadeRepository atividadeRepository,
             EstudanteRepository estudanteRepository,
             List<NotificadorSubmissao> notificadores,
-            ApplicationEventPublisher eventPublisher) {
+            ApplicationEventPublisher eventPublisher,
+            FilaAvaliacao filaAvaliacao) {
         this.submissaoRepository = submissaoRepository;
         this.atividadeRepository = atividadeRepository;
         this.estudanteRepository = estudanteRepository;
         this.notificadores = notificadores;
         this.eventPublisher = eventPublisher;
+        this.filaAvaliacao = filaAvaliacao;
     }
 
     /**
@@ -75,21 +78,17 @@ public class SubmissaoService {
             // Salva inicialmente como SUBMETIDA
             Submissao salva = submissaoRepository.save(novaSubmissao);
 
-            // Encaminha para a fila, alterando para EM_FILA
-            salva.enfileirar();
-
             // Persiste a mudança de status e o histórico
             submissaoRepository.save(salva);
 
             // Publica evento que será recebido após o commit
             eventPublisher.publishEvent(
-                new SubmissaoEnfileiradaEvent(salva.getId())
-);
+                new SubmissaoEnfileiradaEvent(salva.getId()));
 
-return SubmissaoResponse.fromEntity(salva);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        return SubmissaoResponse.fromEntity(salva);
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+                }
     }
 
     /**
@@ -152,18 +151,18 @@ return SubmissaoResponse.fromEntity(salva);
     }
 
     @Transactional
-public void iniciarProcessamento(Long id) {
+    public void iniciarProcessamento(Long id) {
 
-    Submissao submissao = submissaoRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Submissão não encontrada."
-        ));
+        Submissao submissao = submissaoRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Submissão não encontrada."
+            ));
 
-    submissao.iniciarProcessamento();
+        submissao.iniciarProcessamento();
 
-    submissaoRepository.save(submissao);
-}
+        submissaoRepository.save(submissao);
+    }
 
     @Transactional
     public void registrarFalha(Long id, String motivo) {
@@ -180,18 +179,19 @@ public void iniciarProcessamento(Long id) {
 }
 
     @Transactional
-public void concluirAvaliacao(
-        Long id,
-        AvaliacaoFinal avaliacaoFinal) {
+    public void concluirAvaliacao(
+            Long id,
+            AvaliacaoFinal avaliacaoFinal) {
 
-    Submissao submissao = submissaoRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Submissão não encontrada."
-        ));
+        Submissao submissao = submissaoRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Submissão não encontrada."
+            ));
 
-    submissao.concluir(avaliacaoFinal);
+        submissao.concluir(avaliacaoFinal);
 
-    submissaoRepository.save(submissao);
-}
+        submissaoRepository.save(submissao);
+    }
+
 }

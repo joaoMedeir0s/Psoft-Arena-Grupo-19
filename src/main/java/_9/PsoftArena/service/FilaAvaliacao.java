@@ -39,5 +39,5 @@ public class FilaAvaliacao {
 
     public Long poll() {
         return fila.poll();
-}
+    }
 }

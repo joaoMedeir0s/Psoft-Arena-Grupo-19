@@ -23,7 +23,6 @@ import _9.PsoftArena.domain.model.AvaliacaoModeloLLM;
 import _9.PsoftArena.domain.model.ConfiguracaoLLM;
 import _9.PsoftArena.domain.model.Estrategia;
 import _9.PsoftArena.domain.model.Estudante;
-import _9.PsoftArena.domain.model.Matricula;
 import _9.PsoftArena.domain.model.Problema;
 import _9.PsoftArena.domain.model.Professor;
 import _9.PsoftArena.domain.model.Submissao;
@@ -214,6 +213,17 @@ class SubmissaoControllerTest {
                 .andExpect(jsonPath("$.estudanteMatricula").value(estudanteMatriculado.getMatricula().getCodigo()))
                 .andExpect(jsonPath("$.atividadeId").value(atividadeAberta.getId()))
                 .andExpect(jsonPath("$.statusAtual").value("CONCLUIDA"))
-                .andExpect(jsonPath("$.historicoStatus.length()").value(4));
+                .andExpect(jsonPath("$.historicoStatus.length()").value(4))
+                .andExpect(jsonPath("$.avaliacaoFinal.nota").value(9.5))
+                .andExpect(jsonPath("$.avaliacaoFinal.evidencias").value(evidencias))
+                .andExpect(jsonPath("$.avaliacaoFinal.justificativa").value(justificativa))
+                .andExpect(jsonPath("$.avaliacaoFinal.dataHoraAvaliacao").exists())
+                .andExpect(jsonPath("$.avaliacaoFinal.avaliacoesModelos.length()").value(1))
+                .andExpect(jsonPath("$.avaliacaoFinal.avaliacoesModelos[0].nomeModelo")
+                        .value("grok-2-latest"))
+                .andExpect(jsonPath("$.avaliacaoFinal.avaliacoesModelos[0].sucesso")
+                        .value(true))
+                .andExpect(jsonPath("$.avaliacaoFinal.avaliacoesModelos[0].nota")
+                        .value(9.5));
     }
 }
